@@ -74,7 +74,7 @@ export async function getAuthUser(): Promise<AuthState> {
     },
   }
 }
-export const getUser = createServerFn()
+export const getUser = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler<AuthState>(({ context }) => {
     return context.auth

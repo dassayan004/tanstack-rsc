@@ -1,7 +1,6 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { logMiddleware } from './logging'
 
-import { AuthState } from '@/schema/auth'
 import { getAuthUser } from '@/functions/auth'
 
 export const authMiddleware = createMiddleware({ type: 'function' })

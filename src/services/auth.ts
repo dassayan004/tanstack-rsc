@@ -1,5 +1,5 @@
-import { getUser } from '@/functions/auth'
 import { queryOptions } from '@tanstack/react-query'
+import { getUser } from '@/functions/auth'
 
 export const authQueries = {
   all: ['auth'],

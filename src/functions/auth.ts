@@ -1,13 +1,9 @@
+import { createServerFn } from '@tanstack/react-start'
+import type { AuthState } from '@/schema/auth'
 import { authMiddleware } from '@/middlewares/auth'
 import { logMiddleware } from '@/middlewares/logging'
-import {
-  AuthState,
-  SignInSchema,
-  SignUpSchema,
-  UserMetaSchema,
-} from '@/schema/auth'
+import { SignInSchema, SignUpSchema, UserMetaSchema } from '@/schema/auth'
 import { getSupabaseServerClient } from '@/utils/supabase'
-import { createServerFn } from '@tanstack/react-start'
 
 export const signUp = createServerFn({ method: 'POST' })
   .inputValidator(SignUpSchema)

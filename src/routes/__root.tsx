@@ -10,8 +10,8 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 
 import appCss from '../styles.css?url'
+import type { QueryClient } from '@tanstack/react-query'
 
-import { type QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/integrations/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'

@@ -1,0 +1,11 @@
+services:
+  tanstack-rsc:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: tanstack_app
+    ports:
+      - '3000:3000'
+    # environment:
+    ## internal (for Next.js backend → MediaMTX)
+    restart: always

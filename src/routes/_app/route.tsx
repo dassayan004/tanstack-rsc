@@ -1,12 +1,15 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import Header from '@/components/Header'
+import { Navbar } from '@/components/navbar1'
 
 export const Route = createFileRoute('/_app')({
-  beforeLoad: ({ context, location }) => {
+  beforeLoad: async ({ context, location }) => {
     if (!context.authState.isAuthenticated) {
       throw redirect({
         to: '/login',
-        search: { redirect: location.href },
+        search: {
+          redirect: location.pathname,
+        },
       })
     }
   },
@@ -20,9 +23,7 @@ function RouteComponent() {
   return (
     <section>
       <>
-        <Header />
-        <h1>App Layout</h1>
-
+        <Navbar />
         <Outlet />
       </>
     </section>

@@ -4,7 +4,7 @@ import * as TanstackQuery from './integrations/tanstack-query/root-provider'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import NotFound from './components/shadcn-studio/blocks/error-page-01'
+import NotFound from './components/error-page'
 import { DefaultCatchBoundary } from './components/DefaultCatchBoundary'
 
 // Create a new router instance

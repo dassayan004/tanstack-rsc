@@ -15,9 +15,10 @@ import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from '@/integrations/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'
-import NotFound from '@/components/shadcn-studio/blocks/error-page-01'
+import NotFound from '@/components/error-page'
 import { authQueries } from '@/services/auth'
 import { seo } from '@/utils/seo'
+import { getThemeServerFn } from '@/lib/theme'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -69,6 +70,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     return { authState }
   },
+  loader: () => getThemeServerFn(),
   errorComponent: (props) => {
     return (
       <RootDocument>
@@ -89,13 +91,14 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const theme = Route.useLoaderData()
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={theme}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <ThemeProvider>
+        <ThemeProvider theme={theme}>
           <Toaster richColors closeButton position="bottom-center" />
           <main>{children}</main>
           <TanStackDevtools

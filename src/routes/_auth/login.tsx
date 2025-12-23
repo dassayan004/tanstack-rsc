@@ -1,9 +1,14 @@
-import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  useNavigate,
+  useRouter,
+  useSearch,
+} from '@tanstack/react-router'
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Button } from '@/components/ui/button'
 import {
@@ -25,11 +30,17 @@ export const Route = createFileRoute('/_auth/login')({
 })
 
 function RouteComponent() {
+  const router = useRouter()
+  const search = useSearch({ from: '/_auth/login' })
+
+  const queryClient = useQueryClient()
   const userLogin = useServerFn(signIn)
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: SignInSchema) => userLogin({ data }),
     onSuccess() {
       toast.success('Logged In')
+      queryClient.resetQueries()
+      router.navigate({ to: search.redirect ?? '/', replace: true })
     },
     onError(error) {
       toast.error(error.message)
@@ -43,16 +54,12 @@ function RouteComponent() {
     },
   })
 
-  const navigate = useNavigate()
-  const search = useSearch({ from: '/_auth/login' })
   // 2. Define a submit handler.
   async function onSubmit(values: SignInSchema) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    // console.log(values)
     await mutateAsync(values)
-
-    navigate({ to: search.redirect ?? '/', replace: true })
   }
   return (
     <Form {...form}>

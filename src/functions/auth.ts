@@ -37,6 +37,8 @@ export const signIn = createServerFn({ method: 'POST' })
   .inputValidator(SignInSchema)
   .middleware([logMiddleware])
   .handler(async ({ data }) => {
+    // console.log(data)
+
     const { error } = await getSupabaseServerClient().auth.signInWithPassword({
       email: data.email,
       password: data.password,
@@ -50,26 +52,13 @@ export const signIn = createServerFn({ method: 'POST' })
 export const signOut = createServerFn()
   .middleware([logMiddleware])
   .handler(async () => {
-    await getSupabaseServerClient().auth.signOut()
+    const { error } = await getSupabaseServerClient().auth.signOut()
+
+    if (error) {
+      return { error: error.message }
+    }
   })
 
-export async function getAuthUser(): Promise<AuthState> {
-  const supabase = getSupabaseServerClient()
-
-  const { data } = await supabase.auth.getUser()
-
-  if (!data.user) {
-    return { isAuthenticated: false }
-  }
-
-  return {
-    isAuthenticated: true,
-    user: {
-      email: data.user.email,
-      meta: { username: data.user.user_metadata.username },
-    },
-  }
-}
 export const getUser = createServerFn({ method: 'GET' })
   .middleware([authMiddleware])
   .handler<AuthState>(({ context }) => {

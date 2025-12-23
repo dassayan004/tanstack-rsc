@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export const Route = createFileRoute('/_auth')({
-  beforeLoad: ({ context }) => {
+  beforeLoad: async ({ context }) => {
     if (context.authState.isAuthenticated) {
       throw redirect({ to: '/' })
     }

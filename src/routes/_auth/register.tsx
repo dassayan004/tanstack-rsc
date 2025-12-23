@@ -1,5 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
-import z from 'zod'
+import { createFileRoute, useRouter, useSearch } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -14,56 +13,57 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordField } from '@/components/ui/password-input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import { signUp } from '@/functions/auth'
+import { SignUpSchema } from '@/schema/auth'
 
 export const Route = createFileRoute('/_auth/register')({
   component: RouteComponent,
 })
-const formSchema = z.object({
-  fullName: z.string().min(2, {
-    message: 'Full name must be at least 2 characters.',
-  }),
-  email: z.email({ message: 'Invalid email address.' }),
-  password: z.string().min(6, {
-    message: 'Password must be at least 6 characters.',
-  }),
-})
+
 function RouteComponent() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: '',
-      email: '',
-      password: '',
+  const router = useRouter()
+
+  const queryClient = useQueryClient()
+  const userRegister = useServerFn(signUp)
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (data: SignUpSchema) => userRegister({ data }),
+    onSuccess() {
+      toast.success('Signned Up')
+      queryClient.resetQueries()
+      router.navigate({ to: '/', replace: true })
+    },
+    onError(error) {
+      toast.error(error.message)
     },
   })
-
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const form = useForm<SignUpSchema>({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
+  async function onSubmit(values: SignUpSchema) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
-
-    toast('Registration successful!', {
-      description: (
-        <>
-          <pre className="mt-2 rounded-md bg-input/30 p-4">
-            <code className="">{JSON.stringify(values, null, 2)}</code>
-          </pre>
-        </>
-      ),
-    })
+    // console.log(values)
+    await mutateAsync(values)
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="pt-4 space-y-8">
         <FormField
           control={form.control}
-          name="fullName"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>FullName</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="Full Name" {...field} />
+                <Input type="text" placeholder="Username" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,7 +96,20 @@ function RouteComponent() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <PasswordField placeholder="Confirm Password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full" disabled={isPending}>
           Submit
         </Button>
       </form>

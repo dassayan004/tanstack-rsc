@@ -11,7 +11,7 @@ import {
   StickyNote,
   X,
 } from 'lucide-react'
-import { ThemeToggle } from './theme-toggle'
+// import { ThemeToggle } from './theme-toggle'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,7 +38,7 @@ export default function Header() {
             />
           </Link>
         </h1>
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
       </header>
 
       <aside

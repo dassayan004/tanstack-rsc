@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { User } from '@supabase/supabase-js'
 
 export const UserMetaSchema = z.object({
   username: z.string().min(3).max(20),
@@ -23,7 +24,7 @@ export type SignUpSchema = z.infer<typeof SignUpSchema>
 
 export const SignInSchema = z.object({
   email: z.email(),
-  password: z.string(),
+  password: z.string().min(6),
 })
 
 export type SignInSchema = z.infer<typeof SignInSchema>
@@ -37,4 +38,4 @@ export type AuthState =
       user: User
     }
 
-export type User = { email?: string; meta: UserMeta }
+export type AuthedAuth = Extract<AuthState, { isAuthenticated: true }>

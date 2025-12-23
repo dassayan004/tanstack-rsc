@@ -2,6 +2,8 @@ import { createFileRoute, useRouter, useSearch } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -13,8 +15,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordField } from '@/components/ui/password-input'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
 import { signUp } from '@/functions/auth'
 import { SignUpSchema } from '@/schema/auth'
 

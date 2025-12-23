@@ -1,8 +1,8 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { logMiddleware } from './logging'
 
+import type { AuthState } from '@/schema/auth'
 import { getSupabaseServerClient } from '@/utils/supabase'
-import { AuthState } from '@/schema/auth'
 
 async function getAuthUser(): Promise<AuthState> {
   const supabase = getSupabaseServerClient()

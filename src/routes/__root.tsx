@@ -12,13 +12,14 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 
-import { ThemeProvider } from '@/integrations/theme-provider'
+import { ThemeProvider } from '@/integrations/theme/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary'
 import NotFound from '@/components/error-page'
 import { authQueries } from '@/services/auth'
 import { seo } from '@/utils/seo'
-import { getThemeServerFn } from '@/lib/theme'
+import { THEME_COOKIE_NAME } from '@/integrations/theme/constant'
+import { themeScript } from '@/integrations/theme/scripts'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -70,7 +71,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     return { authState }
   },
-  loader: () => getThemeServerFn(),
+
   errorComponent: (props) => {
     return (
       <RootDocument>
@@ -91,14 +92,14 @@ function RootComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const theme = Route.useLoaderData()
   return (
-    <html lang="en" suppressHydrationWarning className={theme}>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider defaultTheme="system" storageKey={THEME_COOKIE_NAME}>
           <Toaster richColors closeButton position="bottom-center" />
           <main>{children}</main>
           <TanStackDevtools

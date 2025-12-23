@@ -1,7 +1,13 @@
-'use client'
-
 import { Book, Menu, Sunset, Trees, Zap } from 'lucide-react'
 
+import { Route, useRouteContext, useRouter } from '@tanstack/react-router'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import { toast } from 'sonner'
+import { ThemeToggle } from './theme-toggle'
+import { SignedOut } from './auth/SignedOut'
+import { SignedIn } from './auth/SignedIn'
+import { UserMenu } from './auth/user-menu'
 import { cn } from '@/lib/utils'
 
 import {
@@ -26,14 +32,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { ThemeToggle } from './theme-toggle'
+import { signOut } from '@/functions/auth'
 
 interface MenuItem {
   title: string
   url: string
   description?: string
   icon?: React.ReactNode
-  items?: MenuItem[]
+  items?: Array<MenuItem>
 }
 
 interface NavbarProps {
@@ -45,7 +51,7 @@ interface NavbarProps {
     title: string
     className?: string
   }
-  menu?: MenuItem[]
+  menu?: Array<MenuItem>
   auth?: {
     login: {
       title: string
@@ -60,10 +66,10 @@ interface NavbarProps {
 
 const Navbar = ({
   logo = {
-    url: 'https://www.shadcnblocks.com',
-    src: 'https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg',
+    url: '/',
+    src: 'https://tanstack.com/images/logos/toy-palm-chair.png',
     alt: 'logo',
-    title: 'Shadcnblocks.com',
+    title: 'Supabase Starter',
   },
   menu = [
     { title: 'Home', url: '/' },
@@ -143,6 +149,25 @@ const Navbar = ({
   },
   className,
 }: NavbarProps) => {
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  const logout = useServerFn(signOut)
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: () => logout(),
+    onSuccess() {
+      toast.success('Logged Out')
+      queryClient.resetQueries()
+      router.invalidate()
+    },
+    onError(error) {
+      toast.error(error.message)
+    },
+  })
+
+  async function onLogout() {
+    await mutateAsync()
+  }
   return (
     <section className={cn('py-4', className)}>
       <div className="container mx-auto">
@@ -151,12 +176,8 @@ const Navbar = ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
+              <img src={logo.src} className="max-h-8" alt={logo.alt} />
+              <span className="text-lg font-semibold tracking-tighter text-primary">
                 {logo.title}
               </span>
             </a>
@@ -170,12 +191,17 @@ const Navbar = ({
           </div>
           <div className="flex gap-2">
             <ThemeToggle />
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+            <SignedIn>
+              <UserMenu />
+            </SignedIn>
+            <SignedOut>
+              <Button asChild variant="outline" size="sm">
+                <a href={auth.login.url}>{auth.login.title}</a>
+              </Button>
+              <Button asChild size="sm">
+                <a href={auth.signup.url}>{auth.signup.title}</a>
+              </Button>
+            </SignedOut>
           </div>
         </nav>
 
@@ -184,11 +210,7 @@ const Navbar = ({
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
+              <img src={logo.src} className="max-h-8 " alt={logo.alt} />
             </a>
             <Sheet>
               <SheetTrigger asChild>
@@ -203,7 +225,7 @@ const Navbar = ({
                       <a href={logo.url} className="flex items-center gap-2">
                         <img
                           src={logo.src}
-                          className="max-h-8 dark:invert"
+                          className="max-h-8"
                           alt={logo.alt}
                         />
                       </a>
@@ -221,12 +243,24 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+                    <SignedIn>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={isPending}
+                        onClick={onLogout}
+                      >
+                        {isPending ? 'Logging out…' : 'Logout'}
+                      </Button>
+                    </SignedIn>
+                    <SignedOut>
+                      <Button asChild variant="outline">
+                        <a href={auth.login.url}>{auth.login.title}</a>
+                      </Button>
+                      <Button asChild>
+                        <a href={auth.signup.url}>{auth.signup.title}</a>
+                      </Button>
+                    </SignedOut>
                   </div>
                 </div>
               </SheetContent>

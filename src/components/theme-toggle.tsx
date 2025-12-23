@@ -1,16 +1,36 @@
-import { useTheme } from '@/integrations/theme-provider'
-import { Moon, Sun } from 'lucide-react'
+import { Laptop, Moon, Sun } from 'lucide-react'
+import { Button } from './ui/button'
 
-export function ThemeToggle() {
+import { useTheme } from '@/integrations/theme/theme-provider'
+
+export const ThemeToggle = () => {
   const { theme, setTheme } = useTheme()
-
-  function toggleTheme() {
-    setTheme(theme === 'light' ? 'dark' : 'light')
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      setTheme('dark')
+    } else if (theme === 'dark') {
+      setTheme('system')
+    } else {
+      setTheme('light')
+    }
   }
 
   return (
-    <button onClick={toggleTheme} aria-label="Toggle theme">
-      {theme === 'dark' ? <Moon /> : <Sun />}
-    </button>
+    <Button
+      onClick={toggleTheme}
+      aria-label="Toggle theme"
+      variant={'secondary'}
+      className="rounded-full transition-all"
+      size={'icon'}
+    >
+      {/* Light */}
+      {theme === 'light' && <Sun className="h-5 w-5" />}
+
+      {/* Dark */}
+      {theme === 'dark' && <Moon className="h-5 w-5" />}
+
+      {/* System */}
+      {theme === 'system' && <Laptop className="h-5 w-5" />}
+    </Button>
   )
 }

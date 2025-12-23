@@ -1,43 +1,19 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useServerFn } from '@tanstack/react-start'
-import { Button } from '@/components/ui/button'
-import { signOut } from '@/functions/auth'
-import { toast } from 'sonner'
+import { createFileRoute } from '@tanstack/react-router'
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardAction,
-  CardContent,
-  CardFooter,
 } from '@/components/ui/card'
 
 export const Route = createFileRoute('/_app/')({ component: App })
 
 function App() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-
-  const logout = useServerFn(signOut)
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: () => logout(),
-    onSuccess() {
-      toast.success('Logged Out')
-      queryClient.resetQueries()
-      router.invalidate()
-    },
-    onError(error) {
-      toast.error(error.message)
-    },
-  })
   const { authState } = Route.useRouteContext()
   const user = authState.isAuthenticated ? authState.user : null!
-  async function onLogout() {
-    await mutateAsync()
-    router.invalidate()
-  }
+
   return (
     <section className="mx-auto max-w-2xl p-6 space-y-6">
       {/* Greeting */}
@@ -47,20 +23,9 @@ function App() {
 
       {/* Account Card */}
       <Card>
-        <CardHeader className="flex flex-row items-start justify-between space-y-0">
-          <div>
-            <CardTitle>Account</CardTitle>
-            <CardDescription>Logged in as {user.email}</CardDescription>
-          </div>
-
-          <Button
-            variant="destructive"
-            size="sm"
-            disabled={isPending}
-            onClick={onLogout}
-          >
-            {isPending ? 'Logging out…' : 'Logout'}
-          </Button>
+        <CardHeader>
+          <CardTitle>Account</CardTitle>
+          <CardDescription>Logged in as {user.email}</CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-2 text-sm">

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { User } from '@supabase/supabase-js'
+import type { User } from '@supabase/supabase-js'
 
 export const UserMetaSchema = z.object({
   username: z.string().min(3).max(20),

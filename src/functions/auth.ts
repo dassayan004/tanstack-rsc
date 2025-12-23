@@ -13,6 +13,11 @@ export const signUp = createServerFn({ method: 'POST' })
       await getSupabaseServerClient().auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+          data: {
+            username: data.username,
+          },
+        },
       })
 
     if (error) {
